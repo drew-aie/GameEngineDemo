@@ -2,21 +2,31 @@
 #include "Engine/Entity.h"
 #include "Graphics/ShapeComponent.h"
 #include "Engine/TransformComponent.h"
+#include <chrono>
+#include <cmath>
 
 void TestScene::onStart()
 {
-	using namespace GameEngine;
-	using namespace GameGraphics;
-
 	// Setup entity
-	Entity* entity = new Entity();
-	entity->getTransform()->setLocalScale({ 100, 100 });
-	entity->getTransform()->setLocalPosition({ 400, 400 });
+	m_entity = new GameEngine::Entity();
+	m_entity->getTransform()->setLocalScale({ 100, 100 });
+	m_entity->getTransform()->setLocalPosition({ 400, 400 });
 
-	ShapeComponent* shapeComponent = new ShapeComponent();
-	shapeComponent->setShapeType(ShapeType::CIRCLE);
-	
-	entity->addComponent(shapeComponent);
+	GameGraphics::ShapeComponent* shapeComponent = new GameGraphics::ShapeComponent();
+	shapeComponent->setShapeType(GameGraphics::ShapeType::CIRCLE);
+	m_entity->addComponent(shapeComponent);
 
-	addEntity(entity);
+	addEntity(m_entity);
+}
+
+void TestScene::onUpdate(double deltaTime)
+{
+	m_accumulatedTime += deltaTime;
+
+	float circleRadius = 100;
+	float speedScale = 0.5f;
+	GameMath::Vector2 newPosition = { 
+		sin(m_accumulatedTime * speedScale) * circleRadius + 400,
+		cos(m_accumulatedTime * speedScale) * circleRadius + 400 };
+	m_entity->getTransform()->setLocalPosition(newPosition);
 }
